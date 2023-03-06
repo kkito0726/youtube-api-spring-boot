@@ -26,6 +26,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation group: 'com.konghq', name: 'unirest-objectmapper-jackson', version: '4.0.0-RC7'
+	implementation group: 'io.github.cdimascio', name: 'java-dotenv', version: '5.2.2'
 }
 
 tasks.named('test') {
