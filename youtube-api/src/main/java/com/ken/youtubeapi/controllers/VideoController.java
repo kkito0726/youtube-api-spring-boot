@@ -17,7 +17,7 @@ public class VideoController {
 
   @GetMapping("/search")
   public ResponseEntity<String> searchByQuery() {
-    String res = videoService.serchByQuery("pokemon");
+    String res = videoService.searchByQuery("pokemon");
     return ResponseEntity.ok(res);
   }
 }
