@@ -1,6 +1,6 @@
 package com.ken.youtubeapi.models;
 
-import java.time.LocalDateTime;
+import com.google.api.client.util.DateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +14,6 @@ public class Video {
   private String videoTitle;
   private String videoId;
   private String thumbnail;
-  private LocalDateTime publishTime;
+  private DateTime publishTime;
   private String description;
 }

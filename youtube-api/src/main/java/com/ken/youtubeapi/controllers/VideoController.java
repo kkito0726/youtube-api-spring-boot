@@ -1,6 +1,8 @@
 package com.ken.youtubeapi.controllers;
 
+import com.ken.youtubeapi.models.Video;
 import com.ken.youtubeapi.services.VideoService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +18,8 @@ public class VideoController {
   private final VideoService videoService;
 
   @GetMapping("/search")
-  public ResponseEntity<String> searchByQuery() {
-    String res = videoService.searchByQuery("pokemon");
+  public ResponseEntity<List<Video>> searchByQuery() {
+    List<Video> res = videoService.searchByQuery("pokemon");
     return ResponseEntity.ok(res);
   }
 }
