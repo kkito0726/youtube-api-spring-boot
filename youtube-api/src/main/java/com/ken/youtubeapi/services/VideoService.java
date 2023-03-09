@@ -7,4 +7,8 @@ import org.springframework.stereotype.Service;
 @Service
 public interface VideoService {
   public List<Video> searchByQuery(String query);
+
+  public String findChannelId(String channelUrl);
+
+  public List<Video> searchByChannelId(String channelId);
 }

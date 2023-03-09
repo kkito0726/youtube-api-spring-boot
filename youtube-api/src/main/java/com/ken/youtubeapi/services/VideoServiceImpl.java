@@ -28,6 +28,7 @@ public class VideoServiceImpl implements VideoService {
   };
 
   private static final long NUMBER_OF_VIDEOS_RETURNED = 50;
+  private static final long NUMBER_OF_CHANNEL_ID_RETURNED = 1;
   private static YouTube youtube;
 
   Dotenv dotenv = Dotenv.load();
@@ -44,7 +45,7 @@ public class VideoServiceImpl implements VideoService {
           .setApplicationName("youtube-search-api")
           .build();
 
-      YouTube.Search.List search = youtube.search().list("id,snippet");
+      YouTube.Search.List search = youtube.search().list("snippet");
 
       search.setKey(API_KEY);
       search.setQ(query);
@@ -72,6 +73,67 @@ public class VideoServiceImpl implements VideoService {
     }
 
     return new ArrayList<Video>(Arrays.asList(new Video()));
+  }
+
+  public String findChannelId(String channelUrl) {
+    try {
+      youtube =
+        new YouTube.Builder(
+          HTTP_TRANSPORT,
+          JSON_FACTORY,
+          HTTP_REQUEST_INITIALIZER
+        )
+          .setApplicationName("youtube-search-api")
+          .build();
+
+      YouTube.Search.List search = youtube.search().list("id");
+
+      search.setKey(API_KEY);
+      search.setQ(channelUrl);
+      search.setType("channel");
+      search.setMaxResults(NUMBER_OF_CHANNEL_ID_RETURNED);
+
+      SearchListResponse searchResponse = search.execute();
+      List<SearchResult> searchResults = searchResponse.getItems();
+
+      return searchResults.get(0).getId().getChannelId();
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+    return "err";
+  }
+
+  public List<Video> searchByChannelId(String channelId) {
+    try {
+      youtube =
+        new YouTube.Builder(
+          HTTP_TRANSPORT,
+          JSON_FACTORY,
+          HTTP_REQUEST_INITIALIZER
+        )
+          .setApplicationName("youtube-search-api")
+          .build();
+
+      YouTube.Search.List search = youtube.search().list("snippet");
+
+      search.setKey(API_KEY);
+      search.setChannelId(channelId);
+      search.setType("video");
+      // search.setOrder("order");
+      search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+
+      SearchListResponse searchResponse = search.execute();
+      List<SearchResult> searchResults = searchResponse.getItems();
+
+      if (searchResults != null) {
+        List<Video> videos = map2Videos(searchResults);
+        return videos;
+      }
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+    return new ArrayList<Video>(Arrays.asList(new Video()));
+    // return "err ";
   }
 
   private List<Video> map2Videos(List<SearchResult> searchResults) {
