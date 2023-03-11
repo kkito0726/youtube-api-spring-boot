@@ -13,8 +13,11 @@ import com.google.api.services.youtube.model.CommentThread;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import com.google.api.services.youtube.model.VideoListResponse;
+import com.google.api.services.youtube.model.VideoSnippet;
 import com.ken.youtubeapi.models.Comment;
 import com.ken.youtubeapi.models.Video;
+import com.ken.youtubeapi.models.VideoInfo;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -172,6 +175,41 @@ public class VideoServiceImpl implements VideoService {
       // TODO: handle exception
     }
     return new ArrayList<Comment>(Arrays.asList(new Comment()));
+  }
+
+  public VideoInfo getVideoInfo(String videoId) {
+    try {
+      youtube =
+        new YouTube.Builder(
+          HTTP_TRANSPORT,
+          JSON_FACTORY,
+          HTTP_REQUEST_INITIALIZER
+        )
+          .setApplicationName("youtube-search-api")
+          .build();
+
+      YouTube.Videos.List videoSearch = youtube.videos().list("snippet");
+
+      videoSearch.setKey(API_KEY);
+      videoSearch.setId(videoId);
+
+      VideoListResponse videoListResponse = videoSearch.execute();
+      List<com.google.api.services.youtube.model.Video> videos = videoListResponse.getItems();
+
+      if (videos != null) {
+        VideoSnippet videoSnippet = videos.get(0).getSnippet();
+        VideoInfo videoInfo = new VideoInfo(
+          videoSnippet.getChannelTitle(),
+          videoSnippet.getTitle(),
+          videoSnippet.getThumbnails().getHigh().getUrl(),
+          videoSnippet.getDescription()
+        );
+        return videoInfo;
+      }
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+    return new VideoInfo();
   }
 
   private List<Video> map2Videos(List<SearchResult> searchResults) {
