@@ -1,5 +1,6 @@
 package com.ken.youtubeapi.controllers;
 
+import com.ken.youtubeapi.models.Comment;
 import com.ken.youtubeapi.models.Video;
 import com.ken.youtubeapi.services.VideoService;
 import java.util.List;
@@ -32,5 +33,13 @@ public class VideoController {
     String channelId = videoService.findChannelId(channelUrl);
     List<Video> res = videoService.searchByChannelId(channelId);
     return ResponseEntity.ok(res);
+  }
+
+  @GetMapping("comments")
+  public ResponseEntity<List<Comment>> getComments(
+    @RequestParam("videoId") String videoId
+  ) {
+    List<Comment> comments = videoService.getComments(videoId);
+    return ResponseEntity.ok(comments);
   }
 }

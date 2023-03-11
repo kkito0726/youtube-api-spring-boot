@@ -8,8 +8,12 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.CommentSnippet;
+import com.google.api.services.youtube.model.CommentThread;
+import com.google.api.services.youtube.model.CommentThreadListResponse;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import com.ken.youtubeapi.models.Comment;
 import com.ken.youtubeapi.models.Video;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
@@ -136,6 +140,40 @@ public class VideoServiceImpl implements VideoService {
     // return "err ";
   }
 
+  public List<Comment> getComments(String videoId) {
+    try {
+      youtube =
+        new YouTube.Builder(
+          HTTP_TRANSPORT,
+          JSON_FACTORY,
+          HTTP_REQUEST_INITIALIZER
+        )
+          .setApplicationName("youtube-search-api")
+          .build();
+
+      YouTube.CommentThreads.List commentSearch = youtube
+        .commentThreads()
+        .list("snippet");
+
+      commentSearch.setKey(API_KEY);
+      commentSearch.setVideoId(videoId);
+      commentSearch.setTextFormat("plaintext");
+      commentSearch.setOrder("relevance");
+      commentSearch.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+
+      CommentThreadListResponse commentThreadListResponse = commentSearch.execute();
+      List<CommentThread> commentThreads = commentThreadListResponse.getItems();
+
+      if (commentThreads != null) {
+        List<Comment> comments = map2Comments(commentThreads);
+        return comments;
+      }
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+    return new ArrayList<Comment>(Arrays.asList(new Comment()));
+  }
+
   private List<Video> map2Videos(List<SearchResult> searchResults) {
     List<Video> videos = searchResults
       .stream()
@@ -151,5 +189,25 @@ public class VideoServiceImpl implements VideoService {
       )
       .toList();
     return videos;
+  }
+
+  private List<Comment> map2Comments(List<CommentThread> commentSearchResults) {
+    List<Comment> comments = new ArrayList<Comment>();
+    for (CommentThread commentThread : commentSearchResults) {
+      CommentSnippet commentData = commentThread
+        .getSnippet()
+        .getTopLevelComment()
+        .getSnippet();
+      Comment comment = new Comment(
+        commentData.getAuthorDisplayName(),
+        commentData.getAuthorProfileImageUrl(),
+        commentData.getPublishedAt(),
+        commentData.getTextDisplay(),
+        commentData.getLikeCount(),
+        commentData.getAuthorChannelUrl()
+      );
+      comments.add(comment);
+    }
+    return comments;
   }
 }
