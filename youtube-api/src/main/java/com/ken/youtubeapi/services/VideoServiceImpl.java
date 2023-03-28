@@ -218,6 +218,7 @@ public class VideoServiceImpl implements VideoService {
       .map(video ->
         new Video(
           video.getSnippet().getChannelId(),
+          video.getSnippet().getChannelTitle(),
           video.getSnippet().getTitle(),
           video.getId().getVideoId(),
           video.getSnippet().getThumbnails().getHigh().getUrl(),

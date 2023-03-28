@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Video {
 
+  private String channelId;
   private String channelTitle;
   private String videoTitle;
   private String videoId;
