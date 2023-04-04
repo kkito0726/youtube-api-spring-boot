@@ -222,7 +222,7 @@ public class VideoServiceImpl implements VideoService {
           video.getSnippet().getTitle(),
           video.getId().getVideoId(),
           video.getSnippet().getThumbnails().getHigh().getUrl(),
-          video.getSnippet().getPublishedAt(),
+          video.getSnippet().getPublishedAt().toString(),
           video.getSnippet().getDescription()
         )
       )
@@ -240,7 +240,8 @@ public class VideoServiceImpl implements VideoService {
       Comment comment = new Comment(
         commentData.getAuthorDisplayName(),
         commentData.getAuthorProfileImageUrl(),
-        commentData.getPublishedAt(),
+        // LocalDateTime.parse(commentData.getPublishedAt().toString()),
+        commentData.getPublishedAt().toString(),
         commentData.getTextDisplay(),
         commentData.getLikeCount(),
         commentData.getAuthorChannelUrl()
